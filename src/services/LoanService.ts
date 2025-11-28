@@ -50,7 +50,7 @@ export class LoanService {
 
     // Verificação de atraso (simples log, poderia gerar cobrança)
     if (returnDate > loan.dueDate) {
-      console.warn(`Devolução com atraso para o empréstimo ${loanId}`);
+      // console.warn(`Devolução com atraso para o empréstimo ${loanId}`);
     }
 
     // 1. Registrar a devolução
