@@ -1,0 +1,39 @@
+language: node_js
+node_js:
+  - "20"
+
+# Cache direto na raiz
+cache:
+  directories:
+    - "node_modules"
+
+services:
+  - mysql
+  - docker
+
+env:
+  global:
+    - DATABASE_URL="mysql://root@127.0.0.1:3306/library_db"
+
+before_script:
+  # Cria o banco
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS library_db;'
+  # Dá permissão ao script (agora na raiz)
+  - chmod +x deploy.sh
+
+install:
+  - npm install
+
+script:
+  # Comandos rodando direto na raiz (sem cd)
+  - npx prisma generate
+  - npx prisma migrate deploy
+  - npm run build
+  - npm test
+
+deploy:
+  provider: script
+  script: bash deploy.sh
+  on:
+    branch: main
+  skip_cleanup: true
