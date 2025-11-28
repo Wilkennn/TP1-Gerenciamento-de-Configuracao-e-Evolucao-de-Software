@@ -1,21 +1,16 @@
 #!/bin/bash
-set -e # Encerra o script se qualquer comando der erro
+set -e
 
-echo "🚀 Iniciando Deploy para o Docker Hub..."
+echo "🚀 Iniciando Build & Push..."
 
-# 1. Login no Docker Hub usando as variáveis do Travis
-# O flag --password-stdin é o jeito seguro de passar a senha sem mostrar no log
-echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
-# 2. Definir o nome da imagem
-# Ex: wilkenmoreira/library-api
+# Definir o nome da imagem
 IMAGE_TAG="$DOCKER_USERNAME/library-api:latest"
 
-echo "📦 Construindo a imagem Docker: $IMAGE_TAG"
+echo "📦 Construindo a imagem: $IMAGE_TAG"
+# O build agora vai funcionar com o truque do Dockerfile
 docker build -t $IMAGE_TAG .
 
-echo "⬆️  Enviando a imagem para o Docker Hub..."
+echo "⬆️  Enviando para o Docker Hub..."
 docker push $IMAGE_TAG
 
 echo "✅ Deploy realizado com sucesso!"
-echo "A imagem está disponível em: https://hub.docker.com/r/$DOCKER_USERNAME/library-api"
