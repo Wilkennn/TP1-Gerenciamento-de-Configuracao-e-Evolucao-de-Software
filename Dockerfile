@@ -8,11 +8,8 @@ COPY prisma ./prisma/
 
 RUN npm install
 
-# --- CORREÇÃO AQUI ---
-# Passamos uma URL falsa ("dummy") apenas para o 'prisma generate' não reclamar.
-# Ele não tenta conectar no banco nessa etapa, apenas valida o schema.
+# Gera o prisma (usando banco dummy para passar no build)
 RUN DATABASE_URL="mysql://dummy:dummy@localhost:3306/db" npx prisma generate
-# ---------------------
 
 COPY . .
 
@@ -29,9 +26,12 @@ COPY --from=builder /usr/src/app/package*.json ./
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/prisma ./prisma
 
-RUN npm install --production
+# --- CORREÇÃO AQUI ---
+# Adicionamos --ignore-scripts para ele não tentar rodar o Husky
+RUN npm install --production --ignore-scripts
+# ---------------------
 
-# Aqui também precisamos da variável dummy para o generate de produção
+# Gera o prisma de produção
 RUN DATABASE_URL="mysql://dummy:dummy@localhost:3306/db" npx prisma generate
 
 EXPOSE 3000
