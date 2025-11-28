@@ -1,24 +1,21 @@
 #!/bin/bash
-set -e # Encerra o script se houver erro
+set -e # Encerra o script se qualquer comando der erro
 
-echo "🚀 Iniciando processo de Deploy..."
+echo "🚀 Iniciando Deploy para o Docker Hub..."
 
-# 1. Instalar dependências apenas de produção (remove devDependencies)
-echo "📦 Instalando dependências de produção..."
-npm install --production
+# 1. Login no Docker Hub usando as variáveis do Travis
+# O flag --password-stdin é o jeito seguro de passar a senha sem mostrar no log
+echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-# 2. Executar Migrations do Banco de Dados (Garante integridade)
-echo "🗄️ Atualizando esquema do banco de dados..."
-npx prisma migrate deploy
+# 2. Definir o nome da imagem
+# Ex: wilkenmoreira/library-api
+IMAGE_TAG="$DOCKER_USERNAME/library-api:latest"
 
-# 3. Reiniciar o serviço (Exemplo usando PM2 ou Docker)
-# O enunciado permite "servidor gratuito ou container docker" [cite: 37]
-echo "🔄 Reiniciando aplicação..."
-if command -v pm2 &> /dev/null; then
-    pm2 reload ecosystem.config.js || pm2 start dist/server.js --name "library-api"
-else
-    echo "PM2 não detectado. Iniciando com node simples..."
-    # Em um cenário real de script, aqui você enviaria os arquivos para o servidor via SSH/SCP
-fi
+echo "📦 Construindo a imagem Docker: $IMAGE_TAG"
+docker build -t $IMAGE_TAG .
 
-echo "✅ Deploy concluído com sucesso!"
+echo "⬆️  Enviando a imagem para o Docker Hub..."
+docker push $IMAGE_TAG
+
+echo "✅ Deploy realizado com sucesso!"
+echo "A imagem está disponível em: https://hub.docker.com/r/$DOCKER_USERNAME/library-api"

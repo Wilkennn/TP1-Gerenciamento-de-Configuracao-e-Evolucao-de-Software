@@ -9,7 +9,8 @@ cache:
 
 # Define o serviço de banco de dados nativo do Travis (MySQL)
 services:
-  - mysql
+  - mysq
+  - docker
 
 # Variáveis de ambiente para o CI conectar no MySQL do Travis
 env:
