@@ -1,0 +1,52 @@
+language: node_js
+node_js:
+  - "20"
+
+# Otimiza o cache para builds mais rápidos
+cache:
+  directories:
+    - "node_modules"
+
+# Define o serviço de banco de dados nativo do Travis (MySQL)
+services:
+  - mysql
+
+# Variáveis de ambiente para o CI conectar no MySQL do Travis
+env:
+  global:
+    - DATABASE_URL="mysql://root@127.0.0.1:3306/library_db"
+
+# Preparação do ambiente antes de rodar os scripts principais
+before_script:
+  # 1. Cria o banco de dados no MySQL do Travis
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS library_db;'
+  # 2. Torna o script de deploy executável (evita erro de permissão)
+  - chmod +x deploy.sh
+
+install:
+  - npm install
+
+# 1. Etapa de Commit: Compilação e Testes [cite: 19]
+script:
+  # Gera o cliente do Prisma (necessário para o código funcionar)
+  - npx prisma generate
+  
+  # Aplica as migrações no banco de teste (cria as tabelas)
+  - npx prisma migrate deploy
+  
+  # a. Compilação (build) da aplicação [cite: 20]
+  # Se houver erro de tipagem TypeScript, o pipeline falha aqui.
+  - npm run build
+  
+  # b. Passar por uma suite de testes automatizados [cite: 25]
+  # Roda Testes Unitários e de Integração
+  - npm test
+
+# 2. Etapa de Lançamento (Deploy) [cite: 35]
+deploy:
+  provider: script
+  # Script de Implantação exigido como entregável [cite: 56]
+  script: bash deploy.sh
+  on:
+    branch: main
+  skip_cleanup: true

@@ -1,0 +1,13 @@
+{
+  "entryPoints": ["src/main.ts"],
+  "out": "docs",
+  "name": "HubDocs Backend API",
+  "readme": "README.md",
+  "includeVersion": true,
+  "lightHighlightTheme": "light-plus",
+  "darkHighlightTheme": "dark-plus",
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "node_modules"],
+  "plugin": [],
+  "theme": "default",
+  "sort": ["source-order"]
+}

@@ -1,0 +1,25 @@
+# Dependências
+node_modules/
+
+# Build
+dist/
+
+# Variáveis de Ambiente (Senhas)
+.env
+
+# Banco de dados (se sobrar algum sqlite)
+*.db
+*.db-journal
+
+# Logs
+*.log
+npm-debug.log*
+
+# Testes
+coverage/
+
+# IDE e Sistema Operacional
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
