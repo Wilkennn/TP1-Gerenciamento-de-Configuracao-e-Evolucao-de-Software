@@ -7,46 +7,39 @@ agent:
 
 blocks:
   - name: "Build & Test"
+    dependencies: []  # <--- ESSA FOI A LINHA QUE FALTOU!
     task:
       jobs:
         - name: "Validar, Testar e Buildar"
           commands:
-            # 1. Baixa o código
             - checkout
-            
-            # 2. Configura Node.js
             - sem-version node 20
             - npm install
-
-            # 3. Sobe o Banco de Dados (Docker Compose)
-            # O Semaphore já tem Docker instalado nativamente
+            
+            # Docker e Banco
             - docker-compose up -d
             - echo "Aguardando MySQL iniciar..."
             - sleep 20 
 
-            # 4. Configura o Banco
+            # Configuração
             - npx prisma migrate dev --name init_ci
             - npx prisma generate
 
-            # 5. Build e Testes (Obrigatório do TP)
+            # Testes
             - npm run build
             - npm test
 
   - name: "Deploy to Docker Hub"
     dependencies: ["Build & Test"]
     skip:
-      # Só faz deploy se estiver na branch main
       when: "branch != 'main'"
     task:
-      # Importa as senhas que vamos configurar no site
       secrets:
         - name: docker-hub
       jobs:
         - name: Publicar Imagem
           commands:
             - checkout
-            # Login manual usando as variáveis secretas
             - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-            # Executa seu script de deploy
             - chmod +x deploy.sh
             - ./deploy.sh
