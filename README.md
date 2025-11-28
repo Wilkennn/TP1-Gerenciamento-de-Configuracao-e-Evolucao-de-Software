@@ -20,7 +20,7 @@ O projeto foi construído utilizando uma stack moderna e robusta:
 -   **ORM:** Prisma (v5.22.0)
 -   **Infraestrutura:** Docker & Docker Compose
 -   **Testes:** Jest & Supertest
--   **CI/CD:** Travis CI
+-   **CI/CD:** Semaphore CI,
 
 ------------------------------------------------------------------------
 
@@ -84,12 +84,18 @@ Cobertura de código:
 
 ## 🔄 Integração Contínua (CI/CD)
 
-Pipeline Travis CI:
+- Pipeline automatizado no Semaphore CI, executando:
+- Build & Test
+- Ambiente Docker efêmero
+- Testes automatizados
+- Deploy no Docker Hub
 
--   Instala dependências e sobe MySQL de teste\
--   Build do TypeScript\
--   Executa testes\
--   Executa `deploy.sh` após aprovação
+------------------------------------------------------------------------
+##  🐳 Rodar versão de produção
+
+``` bash
+docker run -p 3000:3000 wilkenn/library-api:latest
+```
 
 ------------------------------------------------------------------------
 
@@ -103,9 +109,11 @@ Pipeline Travis CI:
 
 ------------------------------------------------------------------------
 
-## 🔒 Políticas de Contribuição
+## 🔒 Governança e Contribuição
 
 -   Conventional Commits (`feat:`, `fix:`, `docs:`...)\
+-   Husky + Commitlint
 -   Branch `main` protegida\
 -   Pull Requests com revisão obrigatória\
 -   Testes obrigatórios para novas funcionalidades
+- Merge somente com testes verdes e aprovação
