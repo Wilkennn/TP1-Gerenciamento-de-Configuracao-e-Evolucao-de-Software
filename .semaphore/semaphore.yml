@@ -7,7 +7,7 @@ agent:
 
 blocks:
   - name: "Build & Test"
-    dependencies: []  # <--- ESSA FOI A LINHA QUE FALTOU!
+    dependencies: []
     task:
       jobs:
         - name: "Validar, Testar e Buildar"
@@ -16,16 +16,19 @@ blocks:
             - sem-version node 20
             - npm install
             
-            # Docker e Banco
+            # Sobe o banco (vai rodar na porta 3307 do localhost da VM)
             - docker-compose up -d
             - echo "Aguardando MySQL iniciar..."
             - sleep 20 
 
-            # Configuração
+            # --- CORREÇÃO INFALÍVEL AQUI ---
+            # Exportamos a variável diretamente no shell antes de usar
+            - export DATABASE_URL="mysql://root:root@127.0.0.1:3307/library_db"
+            # -------------------------------
+
             - npx prisma migrate dev --name init_ci
             - npx prisma generate
 
-            # Testes
             - npm run build
             - npm test
 
